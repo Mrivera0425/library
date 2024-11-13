@@ -12,7 +12,7 @@ Welcome to the Library API documentation. This API allows you to register, authe
 
 **POST** `/user/register`
 
-#### Payload:
+***Payload:***
 ```json
 {
   "username": "string",
