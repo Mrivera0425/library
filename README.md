@@ -1,232 +1,157 @@
+```markdown
 # THE LIBRARY
 
-Welcome to the Library API documentation. This API allows you to register, authenticate, update, delete, and view user accounts. All sensitive actions are protected by JWT authentication.
+This is a REST API for user management in a library system, providing functionality for user registration, authentication, updating, deleting, and retrieving user information.
 
-## Base URL
+---
 
-### http://localhost:8000
+## API Endpoints
 
-## Endpoints
+### 1. **User Registration**
+   - **Endpoint**: `/user/register`
+   - **Method**: `POST`
+   - **Payload**:
+     ```json
+     {
+       "username": "string",
+       "password": "string"
+     }
+     ```
+   - **Response**:
+     - **Success**:
+       ```json
+       {
+         "status": "success",
+         "data": null
+       }
+       ```
+     - **Failure**:
+       ```json
+       {
+         "status": "fail",
+         "data": "Username already exists"
+       }
+       ```
 
-### 1. Register User
+### 2. **User Authentication**
+   - **Endpoint**: `/user/auth`
+   - **Method**: `POST`
+   - **Payload**:
+     ```json
+     {
+       "username": "string",
+       "password": "string"
+     }
+     ```
+   - **Response**:
+     - **Success**:
+       ```json
+       {
+         "status": "success",
+         "token": "JWT_TOKEN",
+         "data": null
+       }
+       ```
+     - **Failure**:
+       - Incorrect username or password:
+         ```json
+         {
+           "status": "fail",
+           "data": { "title": "Incorrect username/password" }
+         }
+         ```
 
-**POST** `/user/register`
+### 3. **Update User Account**
+   - **Endpoint**: `/user/update`
+   - **Method**: `PUT`
+   - **Headers**:
+     - `Authorization`: `Bearer JWT_TOKEN`
+   - **Payload**:
+     ```json
+     {
+       "new_username": "string",
+       "new_password": "string"
+     }
+     ```
+   - **Response**:
+     - **Success**:
+       ```json
+       {
+         "status": "success",
+         "token": "NEW_JWT_TOKEN",
+         "data": null
+       }
+       ```
+     - **Failure**:
+       - User not found or invalid input:
+         ```json
+         {
+           "status": "fail",
+           "data": "User not found"
+         }
+         ```
 
-***Payload:***
-```json
-{
-  "username": "string",
-  "password": "string"
-}
+### 4. **Delete User Account**
+   - **Endpoint**: `/user/delete`
+   - **Method**: `DELETE`
+   - **Headers**:
+     - `Authorization`: `Bearer JWT_TOKEN`
+   - **Payload**:
+     ```json
+     {
+       "user_id": "integer"
+     }
+     ```
+   - **Response**:
+     - **Success**:
+       ```json
+       {
+         "status": "success",
+         "data": "User account deleted"
+       }
+       ```
+     - **Failure**:
+       - User ID not provided or user not found:
+         ```json
+         {
+           "status": "fail",
+           "data": "User ID not provided / User not found"
+         }
+         ```
 
+### 5. **Display Users**
+   - **Endpoint**: `/user/show`
+   - **Method**: `GET`
+   - **Headers**:
+     - `Authorization`: `Bearer JWT_TOKEN`
+   - **Query Parameters**:
+     - `user_id` (optional): Show a specific user's details.
+   - **Response**:
+     - **Success**:
+       ```json
+       {
+         "status": "success",
+         "token": "NEW_JWT_TOKEN",
+         "data": [
+           {
+             "user_id": "integer",
+             "username": "string"
+           }
+         ]
+       }
+       ```
+     - **Failure**:
+       - User not found or no users in the system:
+         ```json
+         {
+           "status": "fail",
+           "data": "User not found / No users found"
+         }
+         ```
 
- #### Response:
+---
 
-Success (200):
-{
-  "status": "success",
-  "data": null
-}
-
-Fail (400):
-{
-  "status": "fail",
-  "data": "Username already exists"
-}
-
-Fail (500):
-{
-  "status": "fail",
-  "data": {
-    "title": "Error message"
-  }
-}
-
-### 2. Authenticate User (Login)
-
-**POST** /user/auth
-
- Authenticates a user by verifying their username and password, and returns a JWT token.
-
-Payload: 
-{
-  "username": "string",
-  "password": "string"
-}
-
-
-### Response: 
-
-Success (200):
-{
-  "status": "success",
-  "token": "JWT_TOKEN",
-  "data": null
-}
-
-Fail(400):
-{
-  "status": "fail",
-  "data": {
-    "title": "Invalid input data"
-  }
-}
-
-
-Fail(404):
-
-{
-  "status": "fail",
-  "data": {
-    "title": "Incorrect username"
-  }
-}
-
-Faile(401):
-{
-  "status": "fail",
-  "data": {
-    "title": "Incorrect password"
-  }
-}
-
-
-### #. Update User Account
-
-PUT /user/update
-
-Allows a user to update their username and password.
-
-Payload:
-{
-  "new_username": "string",
-  "new_password": "string"
-}
-
-Response:
-Success (200):
-
-{
-  "status": "success",
-  "token": "JWT_TOKEN",
-  "data": null
-}
-
-Fail (400):
-{
-  "status": "fail",
-  "data": "Invalid input data"
-}
-
-Fail (404):
-{
-  "status": "fail",
-  "data": "User not found"
-}
-
-Fail (500):
-{
-  "status": "fail",
-  "data": {
-    "title": "Error message"
-  }
-}
-
-4. Delete User Account
-DELETE /user/delete
-
-Deletes a user account by providing the user_id.
-
-Payload:
-{
-  "user_id": "integer"
-}
-
-Response:
-Success (200):
-{
-  "status": "success",
-  "data": "User account deleted"
-}
-
-Fail (400):
-{
-  "status": "fail",
-  "data": "User ID not provided"
-}
-
-Fail (404):
-{
-  "status": "fail",
-  "data": "User with the given user_id not found"
-}
-
-Fail (500):
-{
-  "status": "fail",
-  "data": {
-    "title": "Error message"
-  }
-}
-
-##5. Show Users
-
-GET /user/show
-
-Displays a list of all users or a specific user by user_id.
-
-Query Parameters:
-
-user_id: (optional) Filter by user ID.
-
-Response:
-Success (200):
-
-If a specific user is requested:
-{
-  "status": "success",
-  "token": "JWT_TOKEN",
-  "data": {
-    "user_id": "integer",
-    "username": "string"
-  }
-}
-
-If all users are requested:
-{
-  "status": "success",
-  "token": "JWT_TOKEN",
-  "data": [
-    {
-      "user_id": "integer",
-      "username": "string"
-    },
-    {
-      "user_id": "integer",
-      "username": "string"
-    }
-  ]
-}
-Fail (404):
-
-json
-Copy code
-{
-  "status": "fail",
-  "data": "User not found"
-}
-Fail (500):
-json
-Copy code
-{
-  "status": "fail",
-  "data": {
-    "title": "Error message"
-  }
-}
-
-
-Authentication
-To access any endpoint except for user registration and authentication, you must include a JWT token in the Authorization header of your request:
-
-Authorization: Bearer JWT_TOKEN
+### Note:
+- JWT token is required for endpoints that involve updating, deleting, or displaying user information.
+- Tokens are rotated with each request, and previous tokens are invalidated.
+```
